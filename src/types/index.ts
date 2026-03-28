@@ -1,54 +1,46 @@
-export type CompanyStage =
-  | "pre_seed"
-  | "seed"
-  | "series_a"
-  | "series_b"
-  | "series_c"
-  | "growth"
+export type JobType =
+  | "freelance"
+  | "contract"
+  | "part_time"
+  | "full_time"
   | "unknown";
 
-export type SignalType =
-  | "just_funded"
-  | "no_designer"
-  | "hiring_engineers"
-  | "hiring_first_designer"
-  | "new_launch"
-  | "accelerator_batch"
-  | "technical_founders";
+export type JobSource =
+  | "linkedin"
+  | "indeed"
+  | "dribbble"
+  | "wellfound"
+  | "weworkremotely"
+  | "upwork";
 
 export type LeadScore = "hot" | "warm" | "cool";
 
-export type LeadStatus = "new" | "saved" | "dismissed" | "contacted" | "replied";
+export type LeadStatus = "new" | "saved" | "dismissed" | "applied" | "replied";
 
-export interface Company {
+export interface JobListing {
   id: string;
-  name: string;
-  url: string | null;
-  logo_url: string | null;
+  title: string;
+  company_name: string;
+  company_url: string | null;
   description: string | null;
-  industry: string | null;
-  stage: CompanyStage;
-  funding_amount: number | null;
-  funded_date: string | null;
-  team_size: number | null;
-  designer_count: number | null;
-  engineer_count: number | null;
-  source: string;
-  source_url: string | null;
+  location: string | null;
+  job_type: JobType;
+  source: JobSource;
+  source_url: string;
+  posted_date: string | null;
   score: LeadScore;
-  signals: SignalType[];
+  tags: string[];
   created_at: string;
   updated_at: string;
 }
 
 export interface Lead {
   id: string;
-  company_id: string;
+  job_id: string;
   status: LeadStatus;
   notes: string | null;
-  outreach_angle: string | null;
   updated_at: string;
-  company?: Company;
+  job?: JobListing;
 }
 
 export interface ScrapeRun {
@@ -61,7 +53,7 @@ export interface ScrapeRun {
 
 export type FilterState = {
   score: LeadScore | "all";
-  stage: CompanyStage | "all";
-  source: string | "all";
+  jobType: JobType | "all";
+  source: JobSource | "all";
   search: string;
 };

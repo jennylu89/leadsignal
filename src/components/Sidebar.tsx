@@ -4,9 +4,67 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItems = [
-  { href: "/", label: "Feed", icon: "📡" },
+  { href: "/", label: "Job Feed", icon: "📡" },
   { href: "/saved", label: "Saved", icon: "⭐" },
   { href: "/settings", label: "Settings", icon: "⚙️" },
+];
+
+const externalBoards = [
+  {
+    label: "LinkedIn Freelance",
+    url: "https://www.linkedin.com/jobs/freelance-product-designer-jobs",
+    icon: "💼",
+  },
+  {
+    label: "Indeed Freelance",
+    url: "https://www.indeed.com/q-freelance-product-designer-jobs.html",
+    icon: "🔍",
+  },
+  {
+    label: "Wellfound Startups",
+    url: "https://wellfound.com/role/r/product-designer",
+    icon: "🚀",
+  },
+  {
+    label: "Toptal Freelance",
+    url: "https://www.toptal.com/freelance-jobs/designers/product-design",
+    icon: "💎",
+  },
+  {
+    label: "Contra Freelance",
+    url: "https://contra.com/featured-jobs/freelance-ux-jobs",
+    icon: "✨",
+  },
+  {
+    label: "Dribbble Jobs",
+    url: "https://dribbble.com/remote-product-design-jobs",
+    icon: "🏀",
+  },
+  {
+    label: "Thirdwork Contract",
+    url: "https://www.thirdwork.xyz/careers/ui-ux-designer-contract-remote",
+    icon: "🌐",
+  },
+  {
+    label: "UIUXJobsBoard",
+    url: "https://uiuxjobsboard.com/design-jobs/freelance",
+    icon: "🎨",
+  },
+  {
+    label: "X2Talent Board",
+    url: "https://x2talentjobboard.notion.site/X2Talent-Job-Board-303dd4da463580669031d72da87b4806",
+    icon: "📋",
+  },
+  {
+    label: "YC Startups",
+    url: "https://www.workatastartup.com/companies?role=design",
+    icon: "🟧",
+  },
+  {
+    label: "Pittsburgh UX",
+    url: "https://www.ziprecruiter.com/Jobs/Freelance-Ux-Design/-in-Pittsburgh,PA",
+    icon: "📍",
+  },
 ];
 
 export function Sidebar() {
@@ -19,7 +77,7 @@ export function Sidebar() {
           ⚡ LeadSignal
         </h1>
         <p className="text-xs text-zinc-500 mt-0.5">
-          Find clients before they post
+          Freelance designer job finder
         </p>
       </div>
 
@@ -44,13 +102,31 @@ export function Sidebar() {
             </Link>
           );
         })}
+
+        <div className="pt-4 mt-4 border-t border-zinc-100">
+          <p className="px-3 text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">
+            External Boards
+          </p>
+          {externalBoards.map((board) => (
+            <a
+              key={board.url}
+              href={board.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 transition-colors"
+            >
+              <span className="text-base">{board.icon}</span>
+              {board.label}
+              <span className="text-xs text-zinc-400 ml-auto">↗</span>
+            </a>
+          ))}
+        </div>
       </nav>
 
       <div className="p-4 border-t border-zinc-200">
         <div className="rounded-lg bg-zinc-50 p-3">
-          <p className="text-xs font-medium text-zinc-700">This Week</p>
-          <p className="text-2xl font-bold text-zinc-900 mt-1">8</p>
-          <p className="text-xs text-zinc-500">new leads found</p>
+          <p className="text-xs font-medium text-zinc-700">All your job boards</p>
+          <p className="text-xs text-zinc-400 mt-1">One click away ↗</p>
         </div>
       </div>
     </aside>

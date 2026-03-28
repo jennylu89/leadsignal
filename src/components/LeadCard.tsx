@@ -2,11 +2,11 @@
 
 import { Lead } from "@/types";
 import {
-  formatFunding,
-  formatStage,
-  formatSignal,
+  formatJobType,
+  formatSource,
   scoreColor,
   scoreIcon,
+  sourceIcon,
   timeAgo,
 } from "@/lib/utils";
 
@@ -18,7 +18,7 @@ interface LeadCardProps {
 }
 
 export function LeadCard({ lead, onSave, onDismiss, onSelect }: LeadCardProps) {
-  const company = lead.company!;
+  const job = lead.job!;
 
   return (
     <div
@@ -27,53 +27,47 @@ export function LeadCard({ lead, onSave, onDismiss, onSelect }: LeadCardProps) {
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2.5">
-            <span className="text-lg">{scoreIcon(company.score)}</span>
-            <h3 className="font-semibold text-zinc-900 truncate">
-              {company.name}
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <span className="text-lg">{scoreIcon(job.score)}</span>
+            <h3 className="font-semibold text-zinc-900">
+              {job.title}
             </h3>
-            <span
-              className={`text-xs font-medium px-2 py-0.5 rounded-full border ${scoreColor(company.score)}`}
-            >
-              {company.score}
+          </div>
+
+          <div className="flex items-center gap-2 mt-1.5">
+            <span className="text-sm font-medium text-zinc-700">
+              {job.company_name}
             </span>
-            {company.stage !== "unknown" && (
-              <span className="text-xs text-zinc-500 bg-zinc-100 px-2 py-0.5 rounded-full">
-                {formatStage(company.stage)}
-              </span>
+            {job.location && (
+              <>
+                <span className="text-zinc-300">·</span>
+                <span className="text-sm text-zinc-500">{job.location}</span>
+              </>
             )}
           </div>
 
           <p className="text-sm text-zinc-600 mt-2 line-clamp-2">
-            {company.description}
+            {job.description}
           </p>
 
-          <div className="flex items-center gap-4 mt-3 text-xs text-zinc-500">
-            {company.team_size && (
-              <span>{company.team_size} employees</span>
-            )}
-            {company.designer_count !== null && (
-              <span>
-                {company.designer_count === 0
-                  ? "0 designers ⚠️"
-                  : `${company.designer_count} designers`}
-              </span>
-            )}
-            {company.engineer_count !== null && company.engineer_count > 0 && (
-              <span>{company.engineer_count} engineers</span>
-            )}
-            {company.funding_amount && (
-              <span>{formatFunding(company.funding_amount)} raised</span>
-            )}
-          </div>
-
           <div className="flex items-center gap-2 mt-3 flex-wrap">
-            {company.signals.map((signal) => (
+            <span
+              className={`text-xs font-medium px-2 py-0.5 rounded-full border ${scoreColor(job.score)}`}
+            >
+              {job.score}
+            </span>
+            <span className="text-xs text-zinc-500 bg-zinc-100 px-2 py-0.5 rounded-full">
+              {formatJobType(job.job_type)}
+            </span>
+            <span className="text-xs text-zinc-500 bg-zinc-100 px-2 py-0.5 rounded-full">
+              {sourceIcon(job.source)} {formatSource(job.source)}
+            </span>
+            {job.tags.slice(0, 3).map((tag) => (
               <span
-                key={signal}
+                key={tag}
                 className="text-xs bg-violet-50 text-violet-700 border border-violet-200 px-2 py-0.5 rounded-full"
               >
-                {formatSignal(signal)}
+                {tag}
               </span>
             ))}
           </div>
@@ -81,10 +75,7 @@ export function LeadCard({ lead, onSave, onDismiss, onSelect }: LeadCardProps) {
 
         <div className="flex flex-col items-end gap-2 shrink-0">
           <span className="text-xs text-zinc-400">
-            {timeAgo(company.created_at)}
-          </span>
-          <span className="text-xs text-zinc-400 capitalize">
-            {company.source}
+            {timeAgo(job.posted_date)}
           </span>
         </div>
       </div>
@@ -97,7 +88,7 @@ export function LeadCard({ lead, onSave, onDismiss, onSelect }: LeadCardProps) {
           }}
           className="text-xs font-medium px-3 py-1.5 rounded-lg bg-zinc-900 text-white hover:bg-zinc-800 transition-colors"
         >
-          Save
+          {lead.status === "saved" ? "Saved ✓" : "Save"}
         </button>
         <button
           onClick={(e) => {
@@ -108,17 +99,15 @@ export function LeadCard({ lead, onSave, onDismiss, onSelect }: LeadCardProps) {
         >
           Dismiss
         </button>
-        {company.url && (
-          <a
-            href={company.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="text-xs font-medium px-3 py-1.5 rounded-lg border border-zinc-200 text-zinc-600 hover:bg-zinc-50 transition-colors ml-auto"
-          >
-            Visit Website ↗
-          </a>
-        )}
+        <a
+          href={job.source_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          className="text-xs font-medium px-3 py-1.5 rounded-lg border border-zinc-200 text-zinc-600 hover:bg-zinc-50 transition-colors ml-auto"
+        >
+          View on {formatSource(job.source)} ↗
+        </a>
       </div>
     </div>
   );

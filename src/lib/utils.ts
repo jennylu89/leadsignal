@@ -1,36 +1,26 @@
-import { LeadScore, CompanyStage, SignalType } from "@/types";
+import { LeadScore, JobType, JobSource } from "@/types";
 
-export function formatFunding(amount: number | null): string {
-  if (!amount) return "—";
-  if (amount >= 1_000_000) return `$${(amount / 1_000_000).toFixed(1)}M`;
-  if (amount >= 1_000) return `$${(amount / 1_000).toFixed(0)}K`;
-  return `$${amount}`;
-}
-
-export function formatStage(stage: CompanyStage): string {
-  const map: Record<CompanyStage, string> = {
-    pre_seed: "Pre-Seed",
-    seed: "Seed",
-    series_a: "Series A",
-    series_b: "Series B",
-    series_c: "Series C",
-    growth: "Growth",
+export function formatJobType(type: JobType): string {
+  const map: Record<JobType, string> = {
+    freelance: "Freelance",
+    contract: "Contract",
+    part_time: "Part-Time",
+    full_time: "Full-Time",
     unknown: "Unknown",
   };
-  return map[stage];
+  return map[type];
 }
 
-export function formatSignal(signal: SignalType): string {
-  const map: Record<SignalType, string> = {
-    just_funded: "Just Funded",
-    no_designer: "No Designer",
-    hiring_engineers: "Hiring Engineers",
-    hiring_first_designer: "Hiring 1st Designer",
-    new_launch: "New Launch",
-    accelerator_batch: "Accelerator Batch",
-    technical_founders: "Technical Founders",
+export function formatSource(source: JobSource): string {
+  const map: Record<JobSource, string> = {
+    linkedin: "LinkedIn",
+    indeed: "Indeed",
+    dribbble: "Dribbble",
+    wellfound: "Wellfound",
+    weworkremotely: "We Work Remotely",
+    upwork: "Upwork",
   };
-  return map[signal];
+  return map[source];
 }
 
 export function scoreColor(score: LeadScore): string {
@@ -51,7 +41,20 @@ export function scoreIcon(score: LeadScore): string {
   return map[score];
 }
 
-export function timeAgo(dateStr: string): string {
+export function sourceIcon(source: JobSource): string {
+  const map: Record<JobSource, string> = {
+    linkedin: "💼",
+    indeed: "🔍",
+    dribbble: "🏀",
+    wellfound: "🚀",
+    weworkremotely: "🌍",
+    upwork: "💚",
+  };
+  return map[source];
+}
+
+export function timeAgo(dateStr: string | null): string {
+  if (!dateStr) return "Recently";
   const now = new Date();
   const date = new Date(dateStr);
   const diffMs = now.getTime() - date.getTime();
