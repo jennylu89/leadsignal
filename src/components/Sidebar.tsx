@@ -65,6 +65,21 @@ const externalBoards = [
     url: "https://www.ziprecruiter.com/Jobs/Freelance-Ux-Design/-in-Pittsburgh,PA",
     icon: "📍",
   },
+  {
+    label: "PGH Startups (Wellfound)",
+    url: "https://wellfound.com/startups/location/pittsburgh",
+    icon: "🏙️",
+  },
+  {
+    label: "YC Jobs Pittsburgh",
+    url: "https://www.ycombinator.com/jobs/location/pittsburgh",
+    icon: "🟧",
+  },
+  {
+    label: "Built In Pittsburgh",
+    url: "https://builtin.com/companies/location/na/usa/pa/pittsburgh/startups",
+    icon: "🏗️",
+  },
 ];
 
 export function Sidebar() {
