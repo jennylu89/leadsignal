@@ -1,65 +1,120 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useMemo } from "react";
+import { mockLeads } from "@/lib/mock-data";
+import { FilterState, Lead } from "@/types";
+import { FilterBar } from "@/components/FilterBar";
+import { LeadCard } from "@/components/LeadCard";
+import { LeadDetail } from "@/components/LeadDetail";
+
+export default function FeedPage() {
+  const [leads, setLeads] = useState<Lead[]>(mockLeads);
+  const [filters, setFilters] = useState<FilterState>({
+    score: "all",
+    stage: "all",
+    source: "all",
+    search: "",
+  });
+  const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
+
+  const filteredLeads = useMemo(() => {
+    return leads
+      .filter((lead) => lead.status !== "dismissed")
+      .filter((lead) => {
+        const c = lead.company!;
+        if (filters.score !== "all" && c.score !== filters.score) return false;
+        if (filters.stage !== "all" && c.stage !== filters.stage) return false;
+        if (filters.source !== "all" && c.source !== filters.source)
+          return false;
+        if (
+          filters.search &&
+          !c.name.toLowerCase().includes(filters.search.toLowerCase()) &&
+          !c.description?.toLowerCase().includes(filters.search.toLowerCase()) &&
+          !c.industry?.toLowerCase().includes(filters.search.toLowerCase())
+        )
+          return false;
+        return true;
+      })
+      .sort((a, b) => {
+        const scoreOrder = { hot: 0, warm: 1, cool: 2 };
+        return (
+          scoreOrder[a.company!.score] - scoreOrder[b.company!.score] ||
+          new Date(b.company!.created_at).getTime() -
+            new Date(a.company!.created_at).getTime()
+        );
+      });
+  }, [leads, filters]);
+
+  const hotCount = filteredLeads.filter(
+    (l) => l.company!.score === "hot"
+  ).length;
+
+  const selectedLead = selectedLeadId
+    ? leads.find((l) => l.id === selectedLeadId)
+    : null;
+
+  function updateLeadStatus(id: string, status: Lead["status"]) {
+    setLeads((prev) =>
+      prev.map((l) => (l.id === id ? { ...l, status } : l))
+    );
+    if (status === "dismissed") setSelectedLeadId(null);
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="p-8 max-w-4xl">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-zinc-900">Lead Feed</h1>
+        <p className="text-sm text-zinc-500 mt-1">
+          Companies that likely need freelance product design help
+        </p>
+      </div>
+
+      <FilterBar
+        filters={filters}
+        onChange={setFilters}
+        totalCount={filteredLeads.length}
+        hotCount={hotCount}
+      />
+
+      <div className="mt-6 space-y-3">
+        {filteredLeads.length === 0 ? (
+          <div className="text-center py-16">
+            <p className="text-zinc-400 text-lg">No leads match your filters</p>
+            <button
+              onClick={() =>
+                setFilters({
+                  score: "all",
+                  stage: "all",
+                  source: "all",
+                  search: "",
+                })
+              }
+              className="text-sm text-zinc-600 underline mt-2"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+              Clear filters
+            </button>
+          </div>
+        ) : (
+          filteredLeads.map((lead) => (
+            <LeadCard
+              key={lead.id}
+              lead={lead}
+              onSave={(id) => updateLeadStatus(id, "saved")}
+              onDismiss={(id) => updateLeadStatus(id, "dismissed")}
+              onSelect={setSelectedLeadId}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+          ))
+        )}
+      </div>
+
+      {selectedLead && (
+        <LeadDetail
+          lead={selectedLead}
+          onClose={() => setSelectedLeadId(null)}
+          onSave={(id) => updateLeadStatus(id, "saved")}
+          onDismiss={(id) => updateLeadStatus(id, "dismissed")}
+        />
+      )}
     </div>
   );
 }
